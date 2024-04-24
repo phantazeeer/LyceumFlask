@@ -10,12 +10,14 @@
     <title>{{title}}</title>
 </head>
 <body>
+
     <nav class="navbar navbar-light bg-light">
         <div>
-        <h1>Миссия колонизация Марса</h1>
-        <h4>И на Марсе будут яблони цвести!</h4>
+        <h1>СтройУл</h1>
         </div>
         {% if current_user.is_authenticated %}
+            <a class="navbar-brand" href="/logout">Форум</a>
+            <a class="navbar-brand" href="/logout">Профиль</a>
             <a class="navbar-brand" href="/logout">{{ current_user.name }}</a>
         {% else %}
             <p>
