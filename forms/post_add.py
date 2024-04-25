@@ -8,4 +8,4 @@ class Add_Post(FlaskForm):
     name = StringField("Тема поста", validators=[DataRequired()])
     text = TextAreaField()
     pic = MultipleFileField("Загрузить картинки")
-    submit = SubmitField("Создать тему")
+    submit = SubmitField("Создать/изменить тему")

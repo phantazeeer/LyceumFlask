@@ -156,6 +156,36 @@ def profile_refactor():
     return render_template("ref_prof.html", form=form)
 
 
+@app.route("/news_refactor/<int:post>", methods=['GET', 'POST'])
+@login_required
+def news_refactor(post):
+    form = Add_Post()
+    db_sess = db_session.create_session()
+    news = db_sess.query(News).filter(News.id == post).first()
+    if form.validate_on_submit():
+        if form.pic.data:
+            try:
+                os.mkdir(f"static/posts_img/{post}")
+            except Exception:
+                shutil.rmtree(f"static/posts_img/{post}")
+            try:
+                os.mkdir(f"static/posts_img/{post}")
+            except Exception:
+                print("не удалось создать папку")
+            for f in form.pic.data:
+                file_name = secure_filename(f.filename)
+                f.save(os.path.join(f"static/posts_img/{post}", file_name))
+                print(f"{file_name} добавлен")
+        news.post_named = form.name.data
+        news.text = form.text.data
+        db_sess.commit()
+        return redirect("/main")
+    else:
+        form.name.data = news.post_named
+        form.text.data = news.text
+    return render_template("create_post.html", form=form, page_name="Редактирование поста")
+
+
 @app.route('/logout')
 @login_required
 def logout():
