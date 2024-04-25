@@ -1,4 +1,18 @@
 {% extends "base.html"%}
 {% block content %}
 <h1 align="center">Главная страничка сайта на фласке</h1>
+{% for item in newslist %}
+<div align="center" style="background-color: #c9c9c9;
+border: 1px solid gray;
+border-radius: 5px;
+margin-bottom: 10px;
+margin-left: 300px;
+margin-right: 300px;">
+    <p  align="left">{{ item.user.name }} {{ item.user.surname }}
+        {{item.created}}
+    </p>
+    <p>Тема: {{ item.post_named}}</p>
+    <p>{{item.text}}</p>
+</div>
+{% endfor %}
 {% endblock %}

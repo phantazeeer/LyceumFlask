@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 align="center">Профиль пользователя</h1>
+<div>
+    <a>Имя: </a><a>{{info.name}}</a><br>
+    <a>Фамилия: </a><a>{{info.surname}}</a><br>
+    <a>Отчество: </a><a>{{info.sec_name}}</a><br>
+    <a>Страна и город проживания: </a><a>{{info.country}}, {{info.city}}</a><br>
+    <a>Проекты: </a><a>{{info.projects}}</a><br>
+    <a>Дата создания профиля: </a><a>{{info.created}}</a><br>
+    <a>Дата рождения: </a><a>{{info.birth}}</a><br>
+</div>
+{% endblock %}
