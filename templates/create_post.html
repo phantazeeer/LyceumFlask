@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 align="center">Создание темы</h1>
+<form action="" method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <div>
+        {{ form.name.label }}<br>
+        {{ form.name(class="form-control") }}<br>
+        {% for error in form.name.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </div>
+    <div>
+        {{ form.text.label }}<br>
+        {{ form.text(class="form-control") }}<br>
+        {% for error in form.text.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </div>
+    <div>
+        {{ form.pic(class="form-control") }} {{ form.pic.label }}<br>
+        {% for error in form.pic.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </div>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+</form>
+{% endblock %}
