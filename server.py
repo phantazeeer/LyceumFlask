@@ -108,6 +108,13 @@ def create_post():
     return render_template("create_post.html", form=form)
 
 
+@app.route("/profile/<int:profile>")
+def profile(profile):
+    db = db_session.create_session()
+    info = db.query(User).filter(User.id == profile).first()
+    return render_template("profile.html", info=info)
+
+
 @app.route('/logout')
 @login_required
 def logout():
