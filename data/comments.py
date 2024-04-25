@@ -12,7 +12,7 @@ class Comment(SqlAlchemyBase):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, sqlalchemy.ForeignKey("users.id"))
     post_id = Column(Integer, sqlalchemy.ForeignKey("news.id"))
-    likes = Column(Integer, nullable=True)
+    likes = Column(Integer, nullable=True, default=0)
     text = Column(Text, nullable=True)
     pic = Column(String, nullable=True)
     created = Column(DateTime, default=datetime.datetime.now())

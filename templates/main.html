@@ -1,6 +1,6 @@
 {% extends "base.html"%}
 {% block content %}
-<h1 align="center">Главная страничка сайта на фласке</h1>
+<h1 align="center">Главная страничка</h1>
 {% for item in newslist %}
 <div align="center" style="background-color: #c9c9c9;
 border: 1px solid gray;
@@ -9,10 +9,12 @@ margin-bottom: 10px;
 margin-left: 300px;
 margin-right: 300px;">
     <p  align="left">{{ item.user.name }} {{ item.user.surname }}
-        {{item.created}}
+         написано: {{item.created}}
     </p>
     <p>Тема: {{ item.post_named}}</p>
     <p>{{item.text}}</p>
+    <p align="left"><a href="/liked_post/{{item.id}}">{{ item.likes }} Понравилось</a></p><a href="/full_post/{{item.id}}">Развернуть тему</a>
 </div>
+
 {% endfor %}
 {% endblock %}

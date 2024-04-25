@@ -9,10 +9,13 @@ from data import db_session
 from flask_login import LoginManager, login_user, login_required, logout_user
 from data.users import User
 from data.news import News
+from data.comments import Comment
 from forms.register_form import RegisterForm
 from forms.login_form import LoginForm
 from forms.post_add import Add_Post
+from forms.add_comment import AddComment
 from forms.ref_prof import Refactor_Profile
+from forms.like import Like
 import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
@@ -25,6 +28,16 @@ login_manager.init_app(app)
 def load_user(user_id):
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
+
+
+@app.route("/liked_post/<int:id_post>")
+def liked_post(id_post):
+    return redirect("/main")
+
+
+@app.route("/liked_comm/<int:id_post>")
+def liked_comm(id_post):
+    return redirect(f"/full_post/{id_post}")
 
 
 @app.route("/")
@@ -115,6 +128,34 @@ def profile(profile):
     db = db_session.create_session()
     info = db.query(User).filter(User.id == profile).first()
     return render_template("profile.html", info=info)
+
+
+@app.route("/full_post/<int:id_post>", methods=['GET', 'POST'])
+def full_post(id_post):
+    form = AddComment()
+    db = db_session.create_session()
+    item = db.query(News).filter(News.id == id_post).first()
+    comments = db.query(Comment).filter(Comment.post_id == id_post).all()
+    if form.validate_on_submit():
+        try:
+            last_post = db.query(Comment.id).all()[-1][0]
+        except Exception:
+            print("создание первого комментария")
+            last_post = 1
+        if form.picture.data:
+            os.mkdir(f"static/comms_img/{last_post + 1}")
+            for f in form.picture.data:
+                file_name = secure_filename(f.filename)
+                f.save(os.path.join(f"static/comms_img/{last_post + 1}", file_name))
+                print(f"{file_name} добавлен")
+        new_comm = Comment(
+            text=form.text.data,
+            user_id=flask_login.current_user.id,
+            post_id=id_post
+        )
+        db.add(new_comm)
+        db.commit()
+    return render_template("post.html", comments=comments, item=item, form=form)
 
 
 @app.route("/profile_refactor", methods=['GET', 'POST'])
