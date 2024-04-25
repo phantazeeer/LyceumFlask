@@ -20,7 +20,7 @@ class User(SqlAlchemyBase, UserMixin):
     city = Column(String, nullable=True)
     projects = Column(String, nullable=True)
     picture = Column(String, nullable=True)
-    created = Column(DateTime, default=datetime.datetime.now().date())
+    created = Column(DateTime, default=datetime.datetime.now())
     birth = Column(DateTime, nullable=True)
     liked_posts = Column(String, nullable=True)
     liked_somments = Column(String, nullable=True)

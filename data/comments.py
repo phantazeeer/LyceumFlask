@@ -15,6 +15,6 @@ class Comment(SqlAlchemyBase):
     likes = Column(Integer, nullable=True)
     text = Column(Text, nullable=True)
     pic = Column(String, nullable=True)
-    created = Column(DateTime, default=datetime.datetime.now().date())
+    created = Column(DateTime, default=datetime.datetime.now())
     user = orm.relationship('User')
     post = orm.relationship('News')

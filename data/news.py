@@ -14,6 +14,6 @@ class News(SqlAlchemyBase):
     likes = Column(Integer, nullable=True, default=0)
     post_named = Column(String, nullable=False)
     text = Column(Text, nullable=True)
-    created = Column(DateTime, default=datetime.datetime.now().date())
+    created = Column(DateTime, default=datetime.datetime.now())
     user = orm.relationship('User')
     comments = orm.relationship("Comment", back_populates="post")

@@ -11,6 +11,7 @@ from data.news import News
 from forms.register_form import RegisterForm
 from forms.login_form import LoginForm
 from forms.post_add import Add_Post
+import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -28,6 +29,8 @@ def load_user(user_id):
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     form = LoginForm()
+    if flask_login.current_user.is_authenticated:
+        return redirect("/main")
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.email == form.email.data).first()
@@ -64,12 +67,16 @@ def register():
         user.set_password(form.password.data)
         db_sess.add(user)
         db_sess.commit()
+        return redirect("/main")
     return render_template('register.html', title='Регистрация', form=form)
 
 
 @app.route("/main")
 def main():
-    return render_template("main.html")
+    db = db_session.create_session()
+    s = db.query(News).all()
+    date = datetime.datetime.now()
+    return render_template("main.html", newslist=s, date=date)
 
 
 @app.route("/create_post", methods=['GET', 'POST'])
@@ -78,7 +85,11 @@ def create_post():
     form = Add_Post()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        last_post = db_sess.query(News.id).all()[-1][0]
+        try:
+            last_post = db_sess.query(News.id).all()[-1][0]
+        except Exception:
+            print("создание первого поста")
+            last_post = 1
         print(form.pic.data)
         if form.pic.data:
             os.mkdir(f"static/posts_img/{last_post + 1}")
@@ -93,7 +104,7 @@ def create_post():
         )
         db_sess.add(post)
         db_sess.commit()
-        return 'пост успешно добавлен'
+        return redirect("/main")
     return render_template("create_post.html", form=form)
 
 
