@@ -1,4 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
 <h1 align="center">Войти на сайт</h1>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <div>
+        {{ form.email.label }}<br>
+        {{ form.email(class="form-control") }}<br>
+        {% for error in form.email.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </div>
+    <div>
+        {{ form.password.label }}<br>
+        {{ form.password(class="form-control") }}<br>
+        {% for error in form.password.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </div>
+    <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    <a href="/register">Впервые на сайте? Зарегистрируйтесь</a>
+</form>
+{{ message }}
 {% endblock %}
