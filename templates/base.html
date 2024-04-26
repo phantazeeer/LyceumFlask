@@ -13,10 +13,10 @@
 
     <nav class="navbar navbar-light bg-light">
         <div>
-        <h1>СтройУл</h1>
+        <h5>Ущербный форум Максима Струнникова</h5>
         </div>
+        <a class="navbar-brand" href="/main">Форум</a>
         {% if current_user.is_authenticated %}
-            <a class="navbar-brand" href="/main">Форум</a>
             <a class="navbar-brand" href="/profile/{{ current_user.id }}">Профиль</a>
             <a class="navbar-brand" href="/create_post">Создать пост</a>
             <a class="btn btn-warning" href="/logout">Выйти</a>

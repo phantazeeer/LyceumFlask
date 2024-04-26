@@ -1,0 +1,68 @@
+{% extends "base.html"%}
+{% block content %}
+<div align="center" style="background-color: #c9c9c9;
+border: 1px solid gray;
+border-radius: 5px;
+margin-bottom: 10px;
+margin-left: 300px;
+margin-right: 300px;">
+    <p  align="left"><a href="/profile/{{item.user_id}}">{{ item.user.name }} {{ item.user.surname }}
+         написано: {{item.created}}</a>
+    </p>
+    <p>Тема: {{ item.post_named}}</p>
+    <p>{{item.text}}</p>
+    <img src="../static/posts_img/{{item.id}}/{{item.picture}}">
+    {% if current_user.is_authenticated %}
+    <p align="left"><a href="/liked_post/{{item.id}}">{{ item.likes }} Понравилось</a></p>
+    {% else %}
+    <p align="left">{{ item.likes }} Понравилось</p>
+    {% endif %}
+</div>
+{% for ite in comments %}
+<div align="center" style="background-color: #c9c9c9;
+border: 1px solid gray;
+border-radius: 5px;
+margin-bottom: 10px;
+margin-left: 400px;
+margin-right: 400px;">
+    <p>{{ite.user.name}}{{ite.user.surname}} написано: {{ite.created}}</p>
+    <p>{{ite.text}}</p>
+    <img src="../static/comms_img/{{ite.id}}/{{ite.pic}}">
+    {% if current_user.is_authenticated %}
+    <p align="left"><a href="/liked_comm/{{ite.id}}">{{ ite.likes }} Понравилось</a></p>
+    {% else %}
+    <p align="left">{{ ite.likes }} Понравилось</p>
+    {% endif %}
+</div>
+{% endfor %}
+{% if current_user.is_authenticated %}
+<div align="center" style="background-color: #c9c9c9;
+border: 1px solid gray;
+border-radius: 5px;
+margin-bottom: 10px;
+margin-left: 400px;
+margin-right: 400px;">
+<form action="" method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+<div>
+    {{ form.text.label }}<br>
+    {{ form.text(class="form-control") }}<br>
+    {% for error in form.text.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+</div>
+<div>
+    {{ form.picture(class="form-control") }} {{ form.picture.label }}<br>
+    {% for error in form.picture.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+</div>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+</form>
+</div>
+{% endif %}
+{% endblock %}
