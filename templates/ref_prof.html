@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 <h1 align="center">Редактирование профиля</h1>
+<div align="center" style="background-color: #c9c9c9;
+border: 1px solid gray;
+border-radius: 5px;
+margin-bottom: 10px;
+margin-left: 300px;
+margin-right: 300px;">
 <form action="" method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     <div>
@@ -75,4 +81,5 @@
     </div>
     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
 </form>
+</div>
 {% endblock %}

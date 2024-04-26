@@ -1,7 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
 <h1 align="center">Профиль пользователя</h1>
-<div>
+<div align="left" style="background-color: #c9c9c9;
+border: 1px solid gray;
+border-radius: 5px;
+margin-bottom: 10px;
+margin-left: 10px;
+margin-right: 10px;">
+    <img src="../static/profile_img/{{info.id}}/{{info.picture}}"><br>
     <a>Имя: </a><a>{{info.name}}</a><br>
     <a>Фамилия: </a><a>{{info.surname}}</a><br>
     <a>Отчество: </a><a>{{info.sec_name}}</a><br>
@@ -9,5 +15,30 @@
     <a>Проекты: </a><a>{{info.projects}}</a><br>
     <a>Дата создания профиля: </a><a>{{info.created}}</a><br>
     <a>Дата рождения: </a><a>{{info.birth}}</a><br>
+    {% if current_user.id == info.id %}
+    <a href="/profile_refactor">Изменить профиль</a>
+    {% endif %}
 </div>
+<h1 align="center">Посты пользователя</h1>
+{% for item in newslist %}
+<div align="center" style="background-color: #c9c9c9;
+border: 1px solid gray;
+border-radius: 5px;
+margin-bottom: 10px;
+margin-left: 300px;
+margin-right: 300px;">
+    <p  align="left">{{ item.user.name }} {{ item.user.surname }}
+         написано: {{item.created}}
+    </p>
+    <p>Тема: {{ item.post_named}}</p>
+    <p>{{item.text}}</p>
+    <img src="../static/posts_img/{{item.id}}/{{item.picture}}">
+    {% if current_user.is_authenticated %}
+    <p align="left"><a href="/liked_post/{{item.id}}">{{ item.likes }} Понравилось</a></p>
+    {% else %}
+    <p align="left">{{ item.likes }} Понравилось</p>
+    {% endif %}
+    <a href="/full_post/{{item.id}}">Развернуть тему</a>
+</div>
+{% endfor %}
 {% endblock %}

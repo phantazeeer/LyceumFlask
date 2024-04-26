@@ -5,6 +5,7 @@ import flask_login
 from flask import Flask, render_template, redirect
 from werkzeug.utils import secure_filename
 
+import user_resources
 from data import db_session
 from flask_login import LoginManager, login_user, login_required, logout_user
 from data.users import User
@@ -16,9 +17,11 @@ from forms.post_add import Add_Post
 from forms.add_comment import AddComment
 from forms.ref_prof import Refactor_Profile
 from forms.like import Like
+from flask_restful import reqparse, abort, Api, Resource
 import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
+api = Api(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -32,12 +35,48 @@ def load_user(user_id):
 
 @app.route("/liked_post/<int:id_post>")
 def liked_post(id_post):
+    db = db_session.create_session()
+    user = db.query(User).filter(User.id == flask_login.current_user.id).first()
+    post = db.query(News).filter(News.id == id_post).first()
+    num = str(id_post)
+    try:
+        liked = user.liked_posts.split(";")
+        if num in liked:
+            post.likes -= 1
+            liked.remove(num)
+        else:
+            post.likes += 1
+            liked.append(num)
+    except Exception:
+        post.likes += 1
+        liked = []
+        liked.append(num)
+    user.liked_posts = ";".join(liked)
+    db.commit()
     return redirect("/main")
 
 
-@app.route("/liked_comm/<int:id_post>")
-def liked_comm(id_post):
-    return redirect(f"/full_post/{id_post}")
+@app.route("/liked_comm/<int:id_comm>")
+def liked_comm(id_comm):
+    db = db_session.create_session()
+    user = db.query(User).filter(User.id == flask_login.current_user.id).first()
+    comm = db.query(Comment).filter(Comment.id == id_comm).first()
+    num = str(id_comm)
+    try:
+        liked = user.liked_somments.split(";")
+        if num in liked:
+            comm.likes -= 1
+            liked.remove(num)
+        else:
+            comm.likes += 1
+            liked.append(num)
+    except Exception:
+        comm.likes += 1
+        liked = []
+        liked.append(num)
+    user.liked_somments = ";".join(liked)
+    db.commit()
+    return redirect(f"/full_post/{comm.post_id}")
 
 
 @app.route("/")
@@ -104,7 +143,7 @@ def create_post():
             last_post = db_sess.query(News.id).all()[-1][0]
         except Exception:
             print("создание первого поста")
-            last_post = 1
+            last_post = 0
         print(form.pic.data)
         if form.pic.data:
             os.mkdir(f"static/posts_img/{last_post + 1}")
@@ -112,11 +151,18 @@ def create_post():
                 file_name = secure_filename(f.filename)
                 f.save(os.path.join(f"static/posts_img/{last_post + 1}", file_name))
                 print(f"{file_name} добавлен")
-        post = News(
-            user_id=flask_login.current_user.id,
-            post_named=form.name.data,
-            text=form.text.data
-        )
+                post = News(
+                    user_id=flask_login.current_user.id,
+                    post_named=form.name.data,
+                    text=form.text.data,
+                    picture=file_name
+                )
+        else:
+            post = News(
+                user_id=flask_login.current_user.id,
+                post_named=form.name.data,
+                text=form.text.data
+            )
         db_sess.add(post)
         db_sess.commit()
         return redirect("/main")
@@ -127,7 +173,8 @@ def create_post():
 def profile(profile):
     db = db_session.create_session()
     info = db.query(User).filter(User.id == profile).first()
-    return render_template("profile.html", info=info)
+    news = db.query(News).filter(News.user_id == profile).all()
+    return render_template("profile.html", info=info, newslist=news)
 
 
 @app.route("/full_post/<int:id_post>", methods=['GET', 'POST'])
@@ -141,20 +188,28 @@ def full_post(id_post):
             last_post = db.query(Comment.id).all()[-1][0]
         except Exception:
             print("создание первого комментария")
-            last_post = 1
+            last_post = 0
         if form.picture.data:
             os.mkdir(f"static/comms_img/{last_post + 1}")
             for f in form.picture.data:
                 file_name = secure_filename(f.filename)
                 f.save(os.path.join(f"static/comms_img/{last_post + 1}", file_name))
                 print(f"{file_name} добавлен")
-        new_comm = Comment(
-            text=form.text.data,
-            user_id=flask_login.current_user.id,
-            post_id=id_post
-        )
+                new_comm = Comment(
+                    text=form.text.data,
+                    user_id=flask_login.current_user.id,
+                    post_id=id_post,
+                    pic=file_name
+                )
+        else:
+            new_comm = Comment(
+                text=form.text.data,
+                user_id=flask_login.current_user.id,
+                post_id=id_post
+            )
         db.add(new_comm)
         db.commit()
+        return redirect(f"{id_post}")
     return render_template("post.html", comments=comments, item=item, form=form)
 
 
@@ -185,6 +240,7 @@ def profile_refactor():
             file_name = secure_filename(f.filename)
             f.save(os.path.join(f"static/profile_img/{id_user}", file_name))
             print(f"{file_name} добавлен")
+            worker.picture = file_name
         db.commit()
         return redirect(f"/profile/{flask_login.current_user.id}")
     else:
@@ -216,6 +272,7 @@ def news_refactor(post):
             for f in form.pic.data:
                 file_name = secure_filename(f.filename)
                 f.save(os.path.join(f"static/posts_img/{post}", file_name))
+                news.picture = file_name
                 print(f"{file_name} добавлен")
         news.post_named = form.name.data
         news.text = form.text.data
@@ -235,5 +292,10 @@ def logout():
 
 
 if __name__ == "__main__":
+    # для списка объектов
+    api.add_resource(user_resources.UserListResource, '/api/v2/news')
+
+    # для одного объекта
+    api.add_resource(user_resources.UserResource, '/api/v2/news/<int:news_id>')
     db_session.global_init("db/blogs.db")
     app.run()

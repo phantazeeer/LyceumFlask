@@ -8,13 +8,21 @@ border-radius: 5px;
 margin-bottom: 10px;
 margin-left: 300px;
 margin-right: 300px;">
-    <p  align="left">{{ item.user.name }} {{ item.user.surname }}
-         написано: {{item.created}}
+    <p  align="left"><a href="/profile/{{item.user_id}}">{{ item.user.name }} {{ item.user.surname }}
+        написано: {{item.created}}</a>
     </p>
     <p>Тема: {{ item.post_named}}</p>
     <p>{{item.text}}</p>
-    <p align="left"><a href="/liked_post/{{item.id}}">{{ item.likes }} Понравилось</a></p><a href="/full_post/{{item.id}}">Развернуть тему</a>
+    <img src="./static/posts_img/{{item.id}}/{{item.picture}}">
+    {% if current_user.is_authenticated %}
+    <p align="left"><a href="/liked_post/{{item.id}}">{{ item.likes }} Понравилось</a></p>
+    {% else %}
+    <p align="left">{{ item.likes }} Понравилось</p>
+    {% endif %}
+    <a href="/full_post/{{item.id}}">Развернуть тему</a>
+    {% if current_user.id == item.user_id %}
+    <a href="/news_refactor/{{item.id}}">Изменить пост</a>
+    {% endif %}
 </div>
-
 {% endfor %}
 {% endblock %}

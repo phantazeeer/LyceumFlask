@@ -15,5 +15,6 @@ class News(SqlAlchemyBase):
     post_named = Column(String, nullable=False)
     text = Column(Text, nullable=True)
     created = Column(DateTime, default=datetime.datetime.now())
+    picture = Column(String)
     user = orm.relationship('User')
     comments = orm.relationship("Comment", back_populates="post")
