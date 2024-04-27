@@ -8,7 +8,17 @@ parser.add_argument('name', required=True)
 parser.add_argument('surname', required=True)
 parser.add_argument('sec_name', required=True)
 parser.add_argument('country', required=True)
-parser.add_argument('city', required=True, type=int)
+parser.add_argument('city', required=True)
+parser.add_argument('password', required=True)
+parser.add_argument('email', required=True)
+
+
+parser_put = reqparse.RequestParser()
+parser_put.add_argument("name", required=True)
+parser_put.add_argument("surname", required=True)
+parser_put.add_argument("sec_name", required=True)
+parser_put.add_argument("country", required=True)
+parser_put.add_argument("city", required=True)
 
 
 def abort_if_user_not_found(user_id):
@@ -34,12 +44,26 @@ class UserResource(Resource):
         session.commit()
         return jsonify({'success': 'OK'})
 
+    def put(self, user_id):
+        abort_if_user_not_found(user_id)
+        session = db_session.create_session()
+        user = session.query(User).get(user_id)
+        args = parser_put.parse_args()
+        user.name = args["name"]
+        user.surname = args["surname"]
+        user.sec_name = args["sec_name"]
+        user.country = args["country"]
+        user.city = args["city"]
+        session.commit()
+        return jsonify({'user': user.to_dict(
+            only=('name', 'surname', 'sec_name', 'country', "city"))})
+
 
 class UserListResource(Resource):
     def get(self):
         session = db_session.create_session()
         user = session.query(User).all()
-        return jsonify({'user': [item.to_dict(
+        return jsonify({'users': [item.to_dict(
             only=('name', 'surname', 'sec_name', 'country', "city", "created")) for item in user]})
 
     def post(self):
@@ -47,11 +71,14 @@ class UserListResource(Resource):
         session = db_session.create_session()
         user = User(
             name=args['name'],
+            email=args["email"],
+            hashed_pass=args["password"],
             surname=args['surname'],
             sec_name=args['sec_name'],
             country=args['country'],
             city=args['city']
         )
+        user.set_password(args["password"])
         session.add(user)
         session.commit()
         return jsonify({'id': user.id})
