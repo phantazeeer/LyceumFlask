@@ -11,7 +11,7 @@ margin-right: 300px;">
     </p>
     <p>Тема: {{ item.post_named}}</p>
     <p>{{item.text}}</p>
-    <img src="../static/posts_img/{{item.id}}/{{item.picture}}">
+    <img src="../static/posts_img/{{item.picture}}">
     {% if current_user.is_authenticated %}
     <p align="left"><a href="/liked_post/{{item.id}}">{{ item.likes }} Понравилось</a></p>
     {% else %}

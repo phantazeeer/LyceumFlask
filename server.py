@@ -79,8 +79,8 @@ def liked_comm(id_comm):
     return redirect(f"/full_post/{comm.post_id}")
 
 
-@app.route("/")
-@app.route("/login", methods=['GET', 'POST'])
+@app.route("/", methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if flask_login.current_user.is_authenticated:
@@ -139,17 +139,13 @@ def create_post():
     form = Add_Post()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        try:
-            last_post = db_sess.query(News.id).all()[-1][0]
-        except Exception:
-            print("создание первого поста")
-            last_post = 0
-        print(form.pic.data)
+        posts = db_sess.query(News).all()
         if form.pic.data:
-            os.mkdir(f"static/posts_img/{last_post + 1}")
             for f in form.pic.data:
                 file_name = secure_filename(f.filename)
-                f.save(os.path.join(f"static/posts_img/{last_post + 1}", file_name))
+                if file_name in [i.picture for i in db_sess.query(News.picture).all()]:
+                    file_name = f"{posts[-1].id + 1}" + file_name
+                f.save(os.path.join(f"static/posts_img", file_name))
                 print(f"{file_name} добавлен")
                 post = News(
                     user_id=flask_login.current_user.id,
@@ -184,23 +180,19 @@ def full_post(id_post):
     item = db.query(News).filter(News.id == id_post).first()
     comments = db.query(Comment).filter(Comment.post_id == id_post).all()
     if form.validate_on_submit():
-        try:
-            last_post = db.query(Comment.id).all()[-1][0]
-        except Exception:
-            print("создание первого комментария")
-            last_post = 0
         if form.picture.data:
-            os.mkdir(f"static/comms_img/{last_post + 1}")
             for f in form.picture.data:
                 file_name = secure_filename(f.filename)
-                f.save(os.path.join(f"static/comms_img/{last_post + 1}", file_name))
-                print(f"{file_name} добавлен")
+                if file_name in [i.pic for i in db.query(Comment.pic).all()]:
+                    file_name = f"{comments[-1].id}" + file_name
+                f.save(os.path.join(f"static/comms_img", file_name))
                 new_comm = Comment(
                     text=form.text.data,
                     user_id=flask_login.current_user.id,
                     post_id=id_post,
                     pic=file_name
                 )
+                print(f"{file_name} добавлен")
         else:
             new_comm = Comment(
                 text=form.text.data,
@@ -227,18 +219,11 @@ def profile_refactor():
         worker.city = form.city.data
         worker.projects = form.projects.data
         if form.picture.data:
-            id_user = flask_login.current_user.id
             f = form.picture.data
-            try:
-                os.mkdir(f"static/profile_img/{id_user}")
-            except Exception:
-                shutil.rmtree(f"static/profile_img/{id_user}")
-            try:
-                os.mkdir(f"static/profile_img/{id_user}")
-            except Exception:
-                print("Не удалось создать папку")
             file_name = secure_filename(f.filename)
-            f.save(os.path.join(f"static/profile_img/{id_user}", file_name))
+            if file_name in [i.picture for i in db.query(User.picture).all()]:
+                file_name = f"{worker.id}" + file_name
+            f.save(os.path.join(f"static/profile_img", file_name))
             print(f"{file_name} добавлен")
             worker.picture = file_name
         db.commit()
@@ -261,16 +246,10 @@ def news_refactor(post):
     news = db_sess.query(News).filter(News.id == post).first()
     if form.validate_on_submit():
         if form.pic.data:
-            try:
-                os.mkdir(f"static/posts_img/{post}")
-            except Exception:
-                shutil.rmtree(f"static/posts_img/{post}")
-            try:
-                os.mkdir(f"static/posts_img/{post}")
-            except Exception:
-                print("не удалось создать папку")
             for f in form.pic.data:
                 file_name = secure_filename(f.filename)
+                if file_name in [i.picture for i in db_sess.query(News.picture).all()]:
+                    file_name = f"{news.id}" + file_name
                 f.save(os.path.join(f"static/posts_img/{post}", file_name))
                 news.picture = file_name
                 print(f"{file_name} добавлен")
