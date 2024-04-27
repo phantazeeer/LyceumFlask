@@ -7,7 +7,7 @@ border-radius: 5px;
 margin-bottom: 10px;
 margin-left: 10px;
 margin-right: 10px;">
-    <img src="../static/profile_img/{{info.picture}}"><br>
+    <img src="../static/profile_img/{{info.picture}}" alt=""><br>
     <a>Имя: </a><a>{{info.name}}</a><br>
     <a>Фамилия: </a><a>{{info.surname}}</a><br>
     <a>Отчество: </a><a>{{info.sec_name}}</a><br>
@@ -32,7 +32,7 @@ margin-right: 300px;">
     </p>
     <p>Тема: {{ item.post_named}}</p>
     <p>{{item.text}}</p>
-    <img src="../static/posts_img/{{item.id}}/{{item.picture}}">
+    <img src="../static/posts_img/{{item.id}}/{{item.picture}}" alt="">
     {% if current_user.is_authenticated %}
     <p align="left"><a href="/liked_post/{{item.id}}">{{ item.likes }} Понравилось</a></p>
     {% else %}

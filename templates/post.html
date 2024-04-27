@@ -11,7 +11,7 @@ margin-right: 300px;">
     </p>
     <p>Тема: {{ item.post_named}}</p>
     <p>{{item.text}}</p>
-    <img src="../static/posts_img/{{item.picture}}">
+    <img src="../static/posts_img/{{item.picture}}" alt="">
     {% if current_user.is_authenticated %}
     <p align="left"><a href="/liked_post/{{item.id}}">{{ item.likes }} Понравилось</a></p>
     {% else %}
@@ -27,7 +27,7 @@ margin-left: 400px;
 margin-right: 400px;">
     <p>{{ite.user.name}}{{ite.user.surname}} написано: {{ite.created}}</p>
     <p>{{ite.text}}</p>
-    <img src="../static/comms_img/{{ite.id}}/{{ite.pic}}">
+    <img src="../static/comms_img/{{ite.id}}/{{ite.pic}}" alt="">
     {% if current_user.is_authenticated %}
     <p align="left"><a href="/liked_comm/{{ite.id}}">{{ ite.likes }} Понравилось</a></p>
     {% else %}
