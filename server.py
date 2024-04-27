@@ -277,4 +277,4 @@ if __name__ == "__main__":
     # для одного объекта
     api.add_resource(user_resources.UserResource, '/api/v2/user/<int:user_id>')
     db_session.global_init("db/blogs.db")
-    app.run()
+    app.run(port=8080, host='127.0.0.1')
