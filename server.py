@@ -278,3 +278,4 @@ if __name__ == "__main__":
     api.add_resource(user_resources.UserResource, '/api/v2/user/<int:user_id>')
     db_session.global_init("db/blogs.db")
     app.run()
+#changes for commit
